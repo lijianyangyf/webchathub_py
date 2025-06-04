@@ -1,83 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Chat Client</title>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <style>
-        #messages {
-            width: 500px;
-            height: 300px;
-            border: 1px solid #333;
-            overflow-y: scroll;
-            padding: 5px;
-        }
-        #input-area {
-            margin-top: 10px;
-        }
-    </style>
+    <script src="static/main.js"></script>
+    <link rel="stylesheet" href="static/styles.css" />
 </head>
 <body>
-    <h2>Chat Client</h2>
-    <div id="login-area">
-        <input type="text" id="name" placeholder="Enter your name" />
-        <button onclick="login()">Login</button>
-    </div>
+    <div class="container">
+        <h2>Chat Client</h2>
+        <div id="login-area">
+            <span id="welcome">Named yourself to join the Chat</span>
+            <div class="input-group row">
+                <input type="text" id="name" class="input" placeholder="Enter your name" />
+                <button id="login-btn">Login</button>
+            </div>
+        </div>
 
-    <div id="chat-area" style="display:none;">
-        <div id="messages"></div>
-        <div id="input-area">
-            <input type="text" id="message" placeholder="Type your message" style="width:400px;" />
-            <button onclick="sendMessage()">Send</button>
+        <div id="chat-area" style="display:none;">
+            <div id="messages"></div>
+            <div class="input-area">
+                <input type="text" id="message" class="input" placeholder="Type your message" style="width:400px;" />
+                <div class="row">
+                    <button id="send-btn">Send</button>
+                    <button id="exit-btn">Exit</button>
+                </div>
+            </div>
         </div>
     </div>
-
-    <script>
-        var socket = io();
-        var loggedIn = false;
-
-        function login() {
-            var name = document.getElementById('name').value.trim();
-            if (!name) {
-                alert("Please enter your name");
-                return;
-            }
-            socket.emit('login', {name: name});
-        }
-
-        socket.on('login_response', function(data) {
-            if (data.success) {
-                loggedIn = true;
-                document.getElementById('login-area').style.display = 'none';
-                document.getElementById('chat-area').style.display = 'block';
-                addMessage("System: Logged in successfully");
-            } else {
-                alert("Login failed: " + data.error);
-            }
-        });
-
-        socket.on('server_message', function(data) {
-            addMessage(data.msg);
-        });
-
-        function sendMessage() {
-            if (!loggedIn) {
-                alert("Please login first");
-                return;
-            }
-            var msgInput = document.getElementById('message');
-            var msg = msgInput.value.trim();
-            if (!msg) return;
-            socket.emit('send_message', {msg: msg});
-            msgInput.value = '';
-        }
-
-        function addMessage(msg) {
-            var messagesDiv = document.getElementById('messages');
-            var p = document.createElement('p');
-            p.textContent = msg;
-            messagesDiv.appendChild(p);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-    </script>
 </body>
 </html>
